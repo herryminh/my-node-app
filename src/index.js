@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
 const exphbs = require('express-handlebars').engine;
 const app = express();
 const PDFDocument = require('pdfkit');
-const port = 3000;
+const port = process.env.PORT || 3000;
 const methodOverride = require('method-override')
 const jsonExpress = express.json()
 const slug = require('mongoose-slug-updater')
@@ -22,9 +23,9 @@ app.use(session({
 app.use(methodOverride('_method'))
 // Import các route và kết nối database
 const route = require('./rourtes/index.js');
-const bd = require('./config/db');
+const db = require('./config/db');
 // connect data base
-bd.connect();
+db.connect();
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('combined'));

@@ -27,6 +27,7 @@
   "homepage": "https://github.com/herryminh/nodejs_BK#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "dotenv": "^17.4.2",
     "express": "^4.19.2",
     "express-handlebars": "^7.1.2",
     "express-session": "^1.18.0",
