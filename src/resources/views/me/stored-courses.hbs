@@ -1,0 +1,183 @@
+<div class="mt-4">
+    <h3>danh sách sản phẩm</h3>
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col"  class="align-middle">#</th>
+      <th scope="col"  class="align-middle">tên sản phẩm </th>
+      <th scope="col"  class="align-middle">đơn giá</th>
+      <th scope="col"  class="align-middle">đơn vị</th>
+      <th scope="col"  class="align-middle"colspan='2'>trang thái</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each courses}}
+    <tr>
+      <th scope="row"  class="align-middle" >{{sum @index 1}}</th>
+      <td  class="align-middle" >{{this.ten_san_pham}}</td>
+      <td  class="align-middle" >{{this.don_gia}}</td>
+      <td  class="align-middle" >{{this.don_vi}}</td>
+      <td  class="align-middle" >{{this.trang_thai}}</td>
+      <td>
+        <a href="/courses/{{this._id}}/edit" class="btn btn-primary m-1">Sửa</a>
+        <a href="" class="btn btn-primary m-1" data-bs-toggle="modal" data-id="{{this._id}}" data-bs-target="#delete-course-modal">Xóa</a>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+</div>
+
+{{!-- Confirm dalete course --}}
+<!-- Button trigger modal -->
+<div id="delete-course-modal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Bạn muốn xóa khóa học ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn chắc chắn muốn xóa khóa học này ?</p>
+      </div>
+      <div class="modal-footer">
+        <button id ="btn-delete-course" type="button" class="btn btn-danger">Xóa bỏ </button>
+        <button  type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{!-- delete hiden form  --}}
+    <form name="delete-course-form" method="post"></form>
+<script>
+
+
+ document.addEventListener('DOMContentLoaded', function(){
+  var courseID;
+  var deleteForm = document.forms['delete-course-form'];
+  var deleteModal = document.getElementById('delete-course-modal');
+
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var id = button.getAttribute('data-id');
+    courseID = id; // Lưu ID vào biến courseID để sử dụng sau này
+  });
+
+  var btnDeleteCourse = document.getElementById('btn-delete-course');
+  btnDeleteCourse.onclick = function(){
+    deleteForm.action = '/courses/' + courseID + '?_method=DELETE';
+    deleteForm.submit()
+  };
+});
+
+{{!-- thêm thuốc --}}
+
+document.getElementById('addProductBtn').addEventListener('click', function() {
+    // 1. Tìm hàng mẫu đầu tiên
+    const productTableBody = document.querySelector('#productsTable tbody');
+    const firstRow = productTableBody.querySelector('.product-row');
+
+    if (firstRow) {
+        // 2. Sao chép (clone) hàng mẫu đó
+        const newRow = firstRow.cloneNode(true);
+
+        // 3. Reset các giá trị của hàng mới
+        newRow.querySelector('.course-select').value = "";
+        newRow.querySelector('.quantity').value = 1;
+        newRow.querySelector('.price').value = 0;
+        newRow.querySelector('.total').value = 0;
+
+        // 4. Thêm sự kiện click cho nút "Xóa" của hàng mới
+        newRow.querySelector('.remove-row').addEventListener('click', function(e) {
+            e.target.closest('tr').remove();
+            calculateGrandTotal(); // Tính lại tổng hóa đơn sau khi xóa
+        });
+
+        // 5. Chèn hàng mới vào cuối bảng
+        productTableBody.appendChild(newRow);
+    }
+});
+ {{!-- xóa hóa đơn --}}
+
+ // Hàm tính tổng tiền của một dòng
+function calculateRowTotal(row) {
+    const qty = Number(row.querySelector('.quantity').value);
+    const price = Number(row.querySelector('.price').value);
+    const totalInput = row.querySelector('.total');
+    totalInput.value = qty * price;
+}
+
+// Hàm tính tổng hóa đơn
+function calculateGrandTotal() {
+    const totals = document.querySelectorAll('.total');
+    let grandTotal = 0;
+    totals.forEach(input => {
+        grandTotal += Number(input.value);
+    });
+    document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('vi-VN');
+}
+
+// Hàm xử lý sự kiện khi một dòng được thêm hoặc thay đổi
+function handleRowEvents(row) {
+    // Sự kiện thay đổi số lượng
+    row.querySelector('.quantity').addEventListener('input', () => {
+        calculateRowTotal(row);
+        calculateGrandTotal();
+    });
+
+    // Sự kiện thay đổi sản phẩm
+    row.querySelector('.course-select').addEventListener('change', (e) => {
+        const select = e.target;
+        const priceInput = row.querySelector('.price');
+        const totalInput = row.querySelector('.total');
+        const selectedOption = select.options[select.selectedIndex];
+        const price = Number(selectedOption.getAttribute('data-price')) || 0;
+
+        priceInput.value = price;
+
+        const qtyInput = row.querySelector('.quantity');
+        const qty = Number(qtyInput.value) || 0;
+        totalInput.value = qty * price;
+
+        calculateGrandTotal();
+    });
+
+    // Sự kiện xóa dòng
+    row.querySelector('.remove-row').addEventListener('click', (e) => {
+        // Hàng duy nhất không thể xóa
+        if (document.querySelectorAll('.product-row').length > 1) {
+            row.remove();
+            calculateGrandTotal();
+        } else {
+            alert("Không thể xóa hàng sản phẩm duy nhất.");
+        }
+    });
+}
+
+// Áp dụng các sự kiện cho hàng đầu tiên
+document.querySelectorAll('.product-row').forEach(row => handleRowEvents(row));
+
+// Xử lý sự kiện cho nút "Thêm thuốc"
+document.getElementById('addProductBtn').addEventListener('click', () => {
+    const productTableBody = document.querySelector('#productsTable tbody');
+    const firstRow = productTableBody.querySelector('.product-row');
+
+    // Sao chép hàng mẫu
+    const newRow = firstRow.cloneNode(true);
+
+    // Reset các giá trị của hàng mới
+    newRow.querySelector('.course-select').value = "";
+    newRow.querySelector('.quantity').value = 1;
+    newRow.querySelector('.price').value = 0;
+    newRow.querySelector('.total').value = 0;
+
+    // Áp dụng các sự kiện cho hàng mới
+    handleRowEvents(newRow);
+
+    // Thêm hàng mới vào cuối bảng
+    productTableBody.appendChild(newRow);
+});
+
+// Tính tổng hóa đơn ban đầu
+calculateGrandTotal();
+</script>

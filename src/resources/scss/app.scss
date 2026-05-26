@@ -1,0 +1,301 @@
+body {
+    margin-top : 50px;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.containerr {
+    margin-top: 60px;
+    display: flex;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-image img {
+    width: 300px;
+    height: auto;
+}
+
+.product-details {
+    padding-left: 20px;
+    flex: 1;
+}
+
+.product-details h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.product-details h2 {
+    font-size: 18px;
+    color: #555;
+}
+
+.certification {
+    color: #888;
+    font-size: 14px;
+}
+
+.rating {
+    margin: 10px 0;
+}
+
+.rating span:first-child {
+    color: #FFD700;
+}
+
+.price {
+    font-size: 24px;
+    color: #E91E63;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #888;
+    margin-left: 10px;
+}
+
+.discount {
+    color: #E91E63;
+    margin-left: 10px;
+}
+
+.flash-deal {
+    background-color: #FF5722;
+    color: #fff;
+    padding: 10px;
+    margin: 10px 0;
+    display: inline-block;
+}
+
+.countdown {
+    display: block;
+    margin-top: 5px;
+}
+
+.shipping {
+    color: #4CAF50;
+    margin: 10px 0;
+}
+
+.stock {
+    color: #333;
+    margin: 10px 0;
+}
+
+.actions {
+    margin: 20px 0;
+}
+
+.actions button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    background-color: #FF5722;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.actions button:hover {
+    background-color: #E64A19;
+}
+.card-course-item {
+    margin-top:16px;
+}
+.user-avatar {
+    width:28px;
+    height : 28px;
+    border-radius:50%;
+    margin-right : 0px;
+}
+.icon_login_acount {
+    width:28px;
+    height : 28px;
+    border-radius:50%;
+    margin-right : 0px;
+    
+}
+.icon_login_acount_man {
+    width:50px;
+    height : 50px;
+    border-radius:50%;
+    margin-right : 0px;
+    margin-top:-18px;
+}
+// tìm kiếm 
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+//  phần form đăng ký 
+.invalid-feedback {
+    display: none;
+    color: red;
+    font-size: 0.9rem;
+}
+
+.is-invalid {
+    border-color: red;
+}
+
+.needs-validation {
+    margin-top : 50px;
+    background-color :darkgrey;
+    padding : 20px 0 40px 0;
+}
+.needs-validation-padding{
+    margin-top : 50px;
+    background-color :darkgrey;
+    padding : 32px;
+}
+.form-infor-acount {
+    display:flex;
+    text-align: center;
+    align-items: center;
+}
+//  trường mật khẩu trong đăng nhập 
+.input-group-text {
+    cursor: pointer;
+}
+// logo mắt trong đăng nhập 
+.input-group-password-eye {
+    width: 20px;
+}
+// chỉnh sửa thẻ đăng nhập 
+.btn-login-none_a {
+    text-decoration: none;
+    color:#1a1919;
+}
+// phần gì thì không 
+.search-box {
+    width: 350px; /* Chiều dài */
+    height: 40px; /* Chiều rộng */
+    padding: 0.2cm; /* Đệm bên trong */
+    border: 1px solid #ccc; /* Đường viền */
+    border-radius: 15px; /* Bo góc */
+    font-size: 1rem; /* Kích thước chữ */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Bóng đổ */
+}
+
+.search-box::placeholder {
+    color: #333; /* Màu chữ placeholder */
+    font-weight: 400; /* Chữ đậm cho placeholder */
+}
+body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20mm auto;
+            padding: 20mm;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .company-info {
+            font-size: 12px;
+            width: 60%;
+        }
+        .invoice-info {
+            font-size: 12px;
+            text-align: right;
+            width: 40%;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0 20px 0;
+        }
+        .customer-info {
+            margin-bottom: 20px;
+        }
+        .customer-info p {
+            margin: 5px 0;
+        }
+        .customer-info .phone-info {
+            text-align: right;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        .item-table th:nth-child(1) { width: 5%; }
+        .item-table th:nth-child(2) { width: 15%; }
+        .item-table th:nth-child(3) { width: 30%; }
+        .item-table th:nth-child(4) { width: 8%; }
+        .item-table th:nth-child(5) { width: 8%; }
+        .item-table th:nth-child(6) { width: 12%; }
+        .item-table th:nth-child(7) { width: 12%; }
+        .item-table th:nth-child(8) { width: 10%; }
+        .summary-wrapper {
+            overflow: hidden;
+        }
+        .summary-table {
+            width: 50%;
+            float: right;
+            border: 1px solid #000;
+        }
+        .summary-table td {
+            border: none;
+            padding: 4px 8px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .footer .signatures {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        .signatures div {
+            width: 30%;
+        }
+        .signatures p {
+            margin: 0;
+        }
+        @media print {
+            body {
+                background-color: #fff;
+            }
+            .a4-page {
+                border: none;
+                box-shadow: none;
+                margin: 0;
+                padding: 10mm;
+            }
+            button {
+                display: none;
+            }
+        }

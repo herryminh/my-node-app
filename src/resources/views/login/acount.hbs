@@ -1,0 +1,42 @@
+<div class="p-4 needs-validation">
+    <div class="form-infor-acount">
+        <div>
+            <img class="icon_login_acount_man" src="https://cdn-icons-png.flaticon.com/512/3276/3276535.png" alt="login">
+        </div>
+        <div>
+            <h1>Thông tin tài khoản</h1>
+        </div>
+    </div>
+    <div class="mt-4">
+        <div class="row">
+            <div class="col-lg-6">
+                <form>
+                    <div class="mb-3">
+                        <label for="inputUserName" class="form-label">Tên đăng nhập</label>
+                        <input type="text" id="inputUserName" class="form-control" value="{{ user.userName}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputName" class="form-label">Tên khách hàng</label>
+                        <input type="text" id="inputName" class="form-control" value="{{ user.name}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputPassword" class="form-label">Mật khẩu</label>
+                        <input type="text" id="inputPassword" class="form-control" value="{{ user.password}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputPhoneNumber" class="form-label">Số điện thoại</label>
+                        <input type="text" id="inputPhoneNumber" class="form-control" value="{{ user.phoneNumber}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputEmail" class="form-label">Email</label>
+                        <input type="text" id="inputEmail" class="form-control" value="{{ user.email}}" readonly>
+                    </div>
+                    <!-- Nút đăng xuất -->
+                    <div class="mb-3">
+                        <a href="/news/logout" class="btn btn-danger">Đăng xuất</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+<div class="container mt-4 pt-5">
+    
+    <div class="card mb-4 shadow-sm border-0 bg-light">
+        <div class="card-body">
+            <form action="/bill/show" method="GET" class="row align-items-end">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="fromDate" class="form-label fw-bold text-primary">Từ ngày:</label>
+                    <input type="date" class="form-control" id="fromDate" name="fromDate" value="{{fromDate}}">
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="toDate" class="form-label fw-bold text-primary">Đến ngày:</label>
+                    <input type="date" class="form-control" id="toDate" name="toDate" value="{{toDate}}">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary px-4">Tìm kiếm</button>
+                    <a href="/bill/show" class="btn btn-outline-secondary ms-2">Bỏ lọc</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-primary text-center">
+            <tr>
+                <th></th>
+                <th>Ngày tạo</th> <th>Khách hàng</th>
+                <th>Địa chỉ</th>
+                <th>Danh sách thuốc</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Tổng số tiền</th>
+                <th>In</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each bills}}
+                <tr>
+                    <td class="text-center">
+                        <a href="" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-id="{{this._id}}" data-bs-target="#delete-course-modal">Xóa</a>
+                    </td>
+                    
+                    <td class="text-center format-date" data-date="{{this.createdAt}}">
+                        {{this.createdAt}}
+                    </td>
+
+                    <td class="fw-bold">{{this.pharmacyName}}</td>
+                    <td>{{this.pharmacyAddress}}</td>
+
+                   <td>
+                        {{#each this.products}}
+                            <span class="fst-italic text-muted">- {{this.name}}</span><br>
+                        {{/each}}
+                        {{#each this.giftProducts}}
+                            <span class="text-success">- {{this.name}} (Tặng)</span><br>
+                        {{/each}}
+                    </td>
+
+                    <td class="text-center">
+                        {{#each this.products}}
+                            <span class="fst-italic text-muted">{{this.quantity}} hộp</span><br>     
+                        {{/each}}
+                        {{#each this.giftProducts}}
+                            <span class="text-success">{{this.quantity}} hộp</span><br>
+                        {{/each}}
+                    </td>
+
+                    <td class="text-end">
+                        {{#each this.products}}
+                            <span class="fst-italic text-muted">{{this.price}} đ</span><br>
+                        {{/each}}
+                    </td>
+                    
+                    <td class="fst-italic text-end fw-bold text-danger">{{this.totalAmount}} đ</td>
+                    
+                    <td class="text-center">
+                        <a href="/bill/{{this._id}}/pdf" class="btn btn-sm btn-primary">🖨️ In</a>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="delete-course-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="exampleModalLabel">Xóa Hóa Đơn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa hóa đơn này không? Hành động này không thể hoàn tác.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="btn-delete-course">Xóa vĩnh viễn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- form ẩn để xóa --}}
+<form name="delete-course-form" method="POST"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Xử lý Format Ngày Tháng cho đẹp (DD/MM/YYYY) ---
+        const dateCells = document.querySelectorAll('.format-date');
+        dateCells.forEach(cell => {
+            const rawDate = cell.getAttribute('data-date');
+            if (rawDate) {
+                const dateObj = new Date(rawDate);
+                // Format thành ngày/tháng/năm
+                cell.innerText = dateObj.toLocaleDateString('vi-VN'); 
+            }
+        });
+
+        // --- Xử lý Xóa Hóa Đơn ---
+        const deleteModal = document.getElementById('delete-course-modal');
+        const deleteForm = document.forms['delete-course-form'];
+        const btnDeleteCourse = document.getElementById('btn-delete-course');
+        var billId; 
+
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; 
+            billId = button.getAttribute('data-id');
+        });
+
+        btnDeleteCourse.addEventListener('click', () => {
+            // Đảm bảo route delete của bạn trùng khớp với setup này
+            deleteForm.action = `/bill/${billId}?_method=DELETE`;
+            deleteForm.submit();
+        });
+    });
+</script>

@@ -1,0 +1,25 @@
+<div class="m-4">
+    <h3>Cập nhật khóa học </h3>
+    <form class="mt-4" method="post" action="/courses/{{course._id}}?_method=PUT">
+             <div div class="form-group "> 
+                <label class="ms-1" for="ten_san_pham">  Tên sản phẩm</label> 
+                <input type="text" class="form-control" value="{{course.ten_san_pham}}" id="ten_san_pham" name="ten_san_pham">
+            </div>
+            <div div class="form-group "> 
+                <label class="ms-1" for="don_gia">  đơn giá</label> 
+                <input type="text" class="form-control" value="{{course.don_gia}}" id="don_gia" name="don_gia">
+            </div>
+            <div div class="form-group "> 
+                <label class="ms-1" for="don_vi">  dạng</label> 
+                <input type="text" class="form-control" value="{{course.don_vi}}" id="don_vi" name="don_vi">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Trạng thái</label>
+                <select class="form-select" name="trang_thai" required>
+                    <option value="còn hàng">Còn hàng</option>
+                    <option value="hết hàng">Hết hàng</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Lưu lại</button>
+    </form>
+</div>

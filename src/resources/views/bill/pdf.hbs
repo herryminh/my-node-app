@@ -1,0 +1,342 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* 1. Thiết lập khổ giấy A5 ngang - CHỐNG BÓP LỀ */
+        @page {
+            size: A5 landscape;
+            margin: 0; 
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Times New Roman", Times, serif;
+            background-color: #f0f0f0;
+            color: #000;
+        }
+
+        .no-print {
+            text-align: center;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-print { background-color: #007bff; }
+        .btn-save { background-color: #28a745; }
+
+        /* Vùng bao ngoài để co giãn trên Mobile */
+        .invoice-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        /* 2. Container A5 */
+        .a5-container {
+            width: 210mm;
+            height: 148mm;
+            padding: 8mm 12mm;
+            box-sizing: border-box;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            flex-shrink: 0; /* Không cho phép bị bóp méo */
+        }
+
+        /* TỰ ĐỘNG CO GIÃN TRÊN ĐIỆN THOẠI */
+        @media screen and (max-width: 210mm) {
+            .invoice-wrapper {
+                justify-content: flex-start;
+                align-items: flex-start;
+                height: 160mm; /* Đảm bảo đủ khoảng trống khi scale */
+            }
+            .a5-container {
+                transform-origin: top left;
+                /* Tính toán tỉ lệ scale dựa trên chiều rộng màn hình */
+                transform: scale(calc(100vw / 215mm)); 
+                margin: 0 5px;
+            }
+        }
+
+        .header { display: flex; margin-bottom: 5px; align-items: flex-start; }
+        .logo { width: 60px; height: 60px; margin-right: 15px; }
+        .company-name { font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .company-info { font-size: 11px; line-height: 1.3; }
+
+        .title-section {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            margin-top: 5px;
+        }
+        .title-main { font-size: 18px; font-weight: bold; margin: 0; padding: 5px 0; text-align: center; }
+        .title-date { 
+            position: absolute; right: 0; bottom: 0;
+            font-style: italic; font-size: 11px; 
+        }
+        
+        .info-row {
+            display: flex; justify-content: space-between;
+            margin-bottom: 8px; font-size: 11px; line-height: 1.5;
+        }
+        .customer-info { width: 75%; }
+        .meta-info { width: 20%; text-align: left; }
+
+        table {
+            width: 100%; border-collapse: collapse;
+            table-layout: fixed; border: 1px solid black;
+        }
+        th, td {
+            border: 1px solid black; padding: 4px 6px;
+            font-size: 11px; word-wrap: break-word;
+        }
+        th { font-weight: bold; text-align: center; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-bold { font-weight: bold; }
+
+        .signatures {
+            display: flex; justify-content: space-between;
+            margin-top: 15px; text-align: center; font-size: 11px;
+        }
+        .sig-box { width: 33%; }
+        .sig-name { font-weight: bold; margin-bottom: 2px; }
+        .sig-sub { font-style: italic; font-size: 10px; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: none; margin: 0; padding: 0; }
+            .invoice-wrapper { padding: 0; display: block; }
+            .a5-container {
+                margin: 0 !important; width: 210mm !important; height: 148mm !important;
+                box-shadow: none; transform: none !important;
+                position: absolute; top: 0; left: 0;
+            }
+        }
+    </style>
+
+<body>
+
+<div class="no-print">
+    <button class="btn btn-print" onclick="window.print()">IN PHIẾU (A5)</button>
+    <button class="btn btn-save" onclick="savePDF()">LƯU ẢNH (ĐIỆN THOẠI)</button>
+</div>
+
+<div class="invoice-wrapper">
+    <div id="invoice" class="a5-container">
+        <div class="header">
+            <img src="/img/logo.png" class="logo">
+            <div class="company-info">
+                <div class="company-name">CÔNG TY CỔ PHẦN DƯỢC NHẤT TRÍ VIỆT</div>
+                <div>53/176/32/35 Đường số 4, Khu phố 24, Phường Bình Tân, TP. HCM</div>
+                <div>Mã số thuế: 0317334192 | Tel: 0823839539</div>
+                <div>Email: nhattriviet2022@gmail.com</div>
+            </div>
+        </div>
+
+        <div class="title-section">
+            <p class="title-main">PHIẾU XUẤT KHO BÁN HÀNG</p>
+            <p class="title-date" id="current-date-top">Ngày ... tháng ... năm ...</p>
+        </div> 
+
+        <div class="info-row">
+            <div class="customer-info">
+                <div>Tên khách hàng: <strong>{{bill.pharmacyName}}</strong></div>
+                <div>Địa chỉ: {{bill.pharmacyAddress}}</div>
+                <div>Số điện thoại: {{bill.customerPhone}}</div>
+                <div>Diễn giải: {{bill.description}}</div>
+                <div>Nhân viên bán hàng: Bùi Đăng Tuấn</div>
+            </div>
+            <div class="meta-info">
+                Số: BH06850<br>
+                Loại tiền: VND
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">STT</th>
+                    <th style="width: 45%;">Tên hàng</th>
+                    <th style="width: 10%;">Đơn vị</th>
+                    <th style="width: 10%;">SL</th>
+                    <th style="width: 12%;">Đơn giá</th>
+                    <th style="width: 18%;">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each bill.products}}
+                <tr>
+                    <td class="text-center">{{sum @index 1}}</td>
+                    <td>{{this.name}}</td>
+                    <td class="text-center">hộp / lọ</td>
+                    <td class="text-right">{{this.quantity}}</td>
+                    <td class="text-right money">{{this.price}}</td>
+                    <td class="text-right money">{{this.total}}</td>
+                </tr>
+                {{/each}}
+
+                {{#if bill.giftProducts.length}}
+                <tr>
+                    <td colspan="6" class="font-bold" style="text-align:left; background: #f9f9f9;">
+                        🎁 HÀNG TẶNG / KHUYẾN MÃI
+                    </td>
+                </tr>
+                {{#each bill.giftProducts}}
+                <tr>
+                    <td class="text-center">{{sum @index (sum ../bill.products.length 1)}}</td>
+                    <td>{{this.name}}</td>
+                    <td class="text-center">hộp / lọ</td>
+                    <td class="text-right">{{this.quantity}}</td>
+                    <td class="text-right money">0</td>
+                    <td class="text-right money">0</td>
+                </tr>
+                {{/each}}
+                {{/if}}
+
+                <tr class="font-bold">
+                    <td colspan="3" class="text-center">Cộng</td>
+                    <td class="text-right">{{bill.totalQuantity}}</td>
+                    <td></td>
+                    <td class="text-right money">{{bill.totalAmount}}</td>
+                </tr>
+                <tr class="font-bold">
+                    <td colspan="5" class="text-right">Tổng tiền thanh toán:</td>
+                    <td class="text-right money" id="total-final">{{bill.totalAmount}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="font-size: 11px; margin-top: 8px;">
+            Số tiền bằng chữ: <strong id="amount-in-words">Đang tính toán...</strong>
+        </div>
+
+        <div class="signatures">
+            <div class="sig-box">
+                <p class="sig-name">Người mua hàng</p>
+                <p class="sig-sub">(Ký, họ tên)</p>
+            </div>
+            <div class="sig-box">
+                <p class="sig-name">Người giao hàng</p>
+                <p class="sig-sub">(Ký, họ tên)</p>
+            </div>
+            <div class="sig-box">
+                <p style="font-style: italic; margin-bottom: 2px;" id="current-date-sig">Ngày ... tháng ... năm ...</p>
+                <p class="sig-name">Kế toán trưởng</p>
+                <p class="sig-sub">(Ký, họ tên)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Định dạng số tiền có dấu chấm
+    function formatMoneyVND(number) {
+        if (!number) return "0";
+        let cleanNumber = number.toString().replace(/[^\d]/g, '');
+        return cleanNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Đọc số thành chữ
+    function docSoVietNam(so) {
+        if (so === 0) return "Không đồng";
+        const chuSo = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
+        const donVi = ["", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ"];
+        function doc3So(n, isFirstGroup) {
+            let tram = Math.floor(n / 100), chuc = Math.floor((n % 100) / 10), dvi = n % 10, res = "";
+            if (tram > 0) res += chuSo[tram] + " trăm ";
+            else if (!isFirstGroup && (chuc > 0 || dvi > 0)) res += "không trăm ";
+            if (chuc > 1) res += chuSo[chuc] + " mươi ";
+            else if (chuc === 1) res += "mười ";
+            else if (chuc === 0 && dvi > 0 && tram > 0) res += "lẻ ";
+            if (dvi > 0) {
+                if (dvi === 1 && chuc > 1) res += "mốt";
+                else if (dvi === 5 && chuc > 0) res += "lăm";
+                else res += chuSo[dvi];
+            }
+            return res.trim();
+        }
+        let arr = [], str = "";
+        while (so > 0) { arr.push(so % 1000); so = Math.floor(so / 1000); }
+        for (let i = arr.length - 1; i >= 0; i--) {
+            if (arr[i] > 0) str += doc3So(arr[i], i === arr.length - 1) + " " + donVi[i] + " ";
+        }
+        str = str.trim();
+        return str.charAt(0).toUpperCase() + str.slice(1) + " đồng./.";
+    }
+
+    window.onload = function() {
+        // 1. Ngày tháng
+        const now = new Date();
+        const dateStr = `Ngày ${String(now.getDate()).padStart(2, '0')} tháng ${String(now.getMonth() + 1).padStart(2, '0')} năm ${now.getFullYear()}`;
+        document.getElementById('current-date-top').innerText = dateStr;
+        document.getElementById('current-date-sig').innerText = dateStr;
+
+        // 2. Định dạng dấu chấm cho tiền
+        document.querySelectorAll('.money').forEach(el => {
+            el.innerText = formatMoneyVND(el.innerText);
+        });
+
+        // 3. Đọc số thành chữ
+        const totalText = document.getElementById('total-final').innerText;
+        const totalNumber = parseInt(totalText.replace(/[^\d]/g, ''));
+        if (!isNaN(totalNumber)) {
+            document.getElementById('amount-in-words').innerText = docSoVietNam(totalNumber);
+        }
+    };
+
+   async function savePDF() {
+    const btn = document.querySelector('.btn-save');
+    btn.innerText = "ĐANG TẠO PDF...";
+
+    const invoice = document.getElementById('invoice');
+
+    const canvas = await html2canvas(invoice, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff"
+    });
+
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+
+    const { jsPDF } = window.jspdf;
+
+    // A5 ngang: 210 x 148 mm
+    const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a5"
+    });
+
+    pdf.addImage(imgData, "JPEG", 0, 0, 210, 148);
+
+    // 👉 TẠO PDF DẠNG BLOB & MỞ TAB MỚI
+    const blob = pdf.output("blob");
+    const url = URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+    btn.innerText = "LƯU PDF (SHARE)";
+}
+</script>
+</body>

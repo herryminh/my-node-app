@@ -1,0 +1,71 @@
+<div class="mt-4">
+    <h3>Danh Sách Khách Hàng</h3>
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col" class="align-middle">#</th>
+      <th scope="col" class="align-middle">tên quầy thuốc </th>
+      <th scope="col" class="align-middle">địa chỉ</th>
+      <th scope="col" class="align-middle"colspan='2'>thời gian tạo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each clients}}
+    <tr class=>
+      <th scope="row" class="align-middle" >{{sum @index 1}}</th>
+      <td class="align-middle" >{{this.name}}</td>
+      <td class="align-middle" >{{this.address}}</td>
+     
+      <td class="align-middle" >{{this.createdAt}}</td>
+      <td>
+        <a href="/client/{{this._id}}/edit" class="btn m-1 btn-primary">Sửa</a>
+        <a href="" class="btn btn-primary m-1" data-bs-toggle="modal" data-id="{{this._id}}" data-bs-target="#delete-client-modal">Xóa</a>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+</div>
+
+{{!-- Confirm dalete course --}}
+<!-- Button trigger modal -->
+<div id="delete-client-modal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Bạn muốn xóa khách hàng này ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>khi bạn xóa khách hàng thì tất cả thông tin của khách hàng này trong hệ thống sẽ xóa sạch, bạn có chắc chắn muốn xóa chứ ?</p>
+      </div>
+      <div class="modal-footer">
+        <button id ="btn-delete-client" type="button" class="btn btn-danger">Xóa bỏ </button>
+        <button  type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{!-- delete hiden form  --}}
+    <form name="delete-course-form" method="post"></form>
+<script>
+ document.addEventListener('DOMContentLoaded', function(){
+  var courseID;
+  var deleteForm = document.forms['delete-course-form'];
+  var deleteModal = document.getElementById('delete-client-modal');
+
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var id = button.getAttribute('data-id');
+    courseID = id; // Lưu ID vào biến courseID để sử dụng sau này
+  });
+
+  var btnDeleteCourse = document.getElementById('btn-delete-client');
+  btnDeleteCourse.onclick = function(){
+    deleteForm.action = '/client/' + courseID + '?_method=DELETE';
+    deleteForm.submit()
+  };
+});
+
+
+</script>

@@ -1,0 +1,22 @@
+<div class="m-4">
+    <h3>Cập nhật thông tin </h3>
+    <form class="mt-4" method="post" action="/client/{{client._id}}?_method=PUT">
+            <div div class="form-group mb-3 "> 
+                <label for="name">Tên khách hàng</label> 
+                <input type="text" class="form-control" value="{{client.name}}" id="name" name="name">
+            </div>
+            <div div class="form-group mb-3 "> 
+                <label for="address">địa chỉ khách hàng</label> 
+                <textarea class="form-control" value="" id="address" name="address">{{client.address}}</textarea>
+            </div>
+            <div div class="form-group mb-3 "> 
+                <label for="email">email</label> 
+                <input type="text" class="form-control" value="{{client.email}}" id="email" name="email">
+            </div>
+            <div div class="form-group mb-3 "> 
+                <label for="phone">số điện thoại</label> 
+                <input type="text" class="form-control" value="{{client.phone}}" id="phone" name="phone">
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Lưu lại</button>
+    </form>
+</div>
