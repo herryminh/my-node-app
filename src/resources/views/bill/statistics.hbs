@@ -1,0 +1,716 @@
+
+<div class="container mt-4 pt-5 statistics-page">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="mb-4">
+        <h3 class="fw-bold text-primary mb-2">
+            <i class="bi bi-bar-chart-line"></i>
+            THỐNG KÊ DOANH THU
+        </h3>
+        <p class="text-muted mb-0">
+            Theo dõi tổng tiền mua hàng của từng quầy thuốc
+        </p>
+    </div>
+
+    <!-- FORM LỌC -->
+    <div class="card filter-card shadow-sm border-0 mb-4">
+        <div class="card-body p-3 p-md-4">
+
+            <form action="/bill/statistics" method="GET">
+
+                <div class="row g-3">
+
+                    <div class="col-12">
+                        <label for="customerName"
+                               class="form-label fw-bold">
+                            <i class="bi bi-shop"></i>
+                            Tên quầy thuốc
+                        </label>
+
+                        <select name="customerName"
+                                id="customerName"
+                                class="form-select form-select-lg"
+                                required>
+
+                            <option value="">
+                                -- Chọn quầy thuốc --
+                            </option>
+
+                            {{#each clients}}
+                                <option value="{{this.name}}"
+                                    {{#if this.selected}}selected{{/if}}>
+                                    {{this.name}}
+                                </option>
+                            {{/each}}
+
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-5">
+                        <label for="fromDate"
+                               class="form-label fw-bold">
+                            Từ ngày
+                        </label>
+
+                        <input type="date"
+                               class="form-control form-control-lg"
+                               id="fromDate"
+                               name="fromDate"
+                               value="{{fromDate}}">
+                    </div>
+
+                    <div class="col-12 col-md-5">
+                        <label for="toDate"
+                               class="form-label fw-bold">
+                            Đến ngày
+                        </label>
+
+                        <input type="date"
+                               class="form-control form-control-lg"
+                               id="toDate"
+                               name="toDate"
+                               value="{{toDate}}">
+                    </div>
+
+                    <div class="col-12 col-md-2 d-flex flex-column justify-content-end gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-search"></i>
+                            Thống kê
+                        </button>
+
+                        <a href="/bill/statistics"
+                           class="btn btn-outline-secondary w-100">
+                            Bỏ lọc
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- THỐNG KÊ TỔNG QUAN -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-12 col-md-6">
+            <div class="card summary-card revenue-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center justify-content-between">
+
+                        <div>
+                            <div class="text-muted mb-2">
+                                Tổng tiền đã mua
+                            </div>
+
+                            <h3 class="fw-bold text-danger mb-0 format-money"
+                                data-money="{{totalAmount}}">
+                                {{totalAmount}} đ
+                            </h3>
+                        </div>
+
+                        <div class="summary-icon revenue-icon">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6">
+            <div class="card summary-card bill-card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center justify-content-between">
+
+                        <div>
+                            <div class="text-muted mb-2">
+                                Tổng số hóa đơn
+                            </div>
+
+                            <h3 class="fw-bold text-primary mb-0">
+                                {{totalBills}} hóa đơn
+                            </h3>
+                        </div>
+
+                        <div class="summary-icon bill-icon">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- THÔNG TIN QUẦY THUỐC -->
+    {{#if customerName}}
+
+        <div class="alert alert-info border-0 shadow-sm mb-4">
+
+            <div class="fw-bold mb-2">
+                <i class="bi bi-info-circle"></i>
+                Thông tin thống kê
+            </div>
+
+            <div class="mb-1">
+                <strong>Quầy thuốc:</strong>
+                {{customerName}}
+            </div>
+
+            <div>
+                <strong>Thời gian:</strong>
+
+                {{#if fromDate}}
+                    {{fromDate}}
+                {{else}}
+                    Tất cả
+                {{/if}}
+
+                đến
+
+                {{#if toDate}}
+                    {{toDate}}
+                {{else}}
+                    Hiện tại
+                {{/if}}
+            </div>
+
+        </div>
+
+    {{else}}
+
+        <div class="alert alert-secondary border-0 mb-4">
+            <i class="bi bi-info-circle"></i>
+            Vui lòng chọn quầy thuốc và khoảng thời gian để xem thống kê.
+        </div>
+
+    {{/if}}
+
+
+    <!-- CHI TIẾT HÓA ĐƠN -->
+    <div class="card border-0 shadow-sm bill-list-card mb-5">
+
+        <div class="card-header bg-primary text-white py-3 px-3 px-md-4">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-receipt-cutoff"></i>
+                CHI TIẾT HÓA ĐƠN
+            </h5>
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <!-- BẢNG DÀNH CHO MÁY TÍNH -->
+            <div class="table-responsive desktop-table">
+
+                <table class="table table-bordered table-hover align-middle mb-0">
+
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>STT</th>
+                            <th>Ngày tạo</th>
+                            <th>Khách hàng</th>
+                            <th>Danh sách thuốc</th>
+                            <th>Số lượng</th>
+                            <th>Tổng tiền</th>
+                            <th>In</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {{#each bills}}
+
+                            <tr>
+
+                                <td class="text-center">
+                                    {{this.stt}}
+                                </td>
+
+                                <td class="text-center format-date"
+                                    data-date="{{this.createdAt}}">
+                                    {{this.createdAt}}
+                                </td>
+
+                                <td class="fw-bold">
+                                    {{this.pharmacyName}}
+                                </td>
+
+                                <td>
+                                    {{#each this.products}}
+                                        <span class="text-muted">
+                                            - {{this.name}}
+                                        </span><br>
+                                    {{/each}}
+
+                                    {{#each this.giftProducts}}
+                                        <span class="text-success">
+                                            - {{this.name}} (Tặng)
+                                        </span><br>
+                                    {{/each}}
+                                </td>
+
+                                <td class="text-center">
+                                    {{#each this.products}}
+                                        {{this.quantity}} hộp<br>
+                                    {{/each}}
+
+                                    {{#each this.giftProducts}}
+                                        <span class="text-success">
+                                            {{this.quantity}} hộp
+                                        </span><br>
+                                    {{/each}}
+                                </td>
+
+                                <td class="text-end fw-bold text-danger format-money"
+                                    data-money="{{this.totalAmount}}">
+                                    {{this.totalAmount}} đ
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="/bill/{{this._id}}/pdf"
+                                       class="btn btn-sm btn-primary">
+                                        <i class="bi bi-printer"></i> In
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        {{else}}
+
+                            <tr>
+                                <td colspan="7"
+                                    class="text-center text-muted py-5">
+                                    Chưa có hóa đơn phù hợp.
+                                </td>
+                            </tr>
+
+                        {{/each}}
+
+                    </tbody>
+
+                    {{#if bills.length}}
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="5" class="text-end fw-bold">
+                                    TỔNG CỘNG:
+                                </td>
+
+                                <td class="text-end fw-bold text-danger format-money"
+                                    data-money="{{totalAmount}}">
+                                    {{totalAmount}} đ
+                                </td>
+
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    {{/if}}
+
+                </table>
+
+            </div>
+
+
+            <!-- DANH SÁCH DẠNG CARD DÀNH CHO ĐIỆN THOẠI -->
+            <div class="mobile-bill-list">
+
+                {{#each bills}}
+
+                    <div class="mobile-bill-item">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                            <div class="fw-bold text-primary">
+                                Hóa đơn #{{this.stt}}
+                            </div>
+
+                            <a href="/bill/{{this._id}}/pdf"
+                               class="btn btn-sm btn-primary">
+                                <i class="bi bi-printer"></i> In
+                            </a>
+
+                        </div>
+
+                        <div class="mobile-info-row">
+                            <span>Ngày tạo</span>
+                            <strong class="format-date"
+                                    data-date="{{this.createdAt}}">
+                                {{this.createdAt}}
+                            </strong>
+                        </div>
+
+                        <div class="mobile-info-row">
+                            <span>Khách hàng</span>
+                            <strong class="text-end">
+                                {{this.pharmacyName}}
+                            </strong>
+                        </div>
+
+                        <div class="mobile-product-section">
+
+                            <div class="fw-bold mb-2">
+                                Danh sách thuốc
+                            </div>
+
+                            {{#each this.products}}
+                                <div class="mobile-product-row">
+                                    <span>{{this.name}}</span>
+                                    <span>{{this.quantity}} hộp</span>
+                                </div>
+                            {{/each}}
+
+                            {{#each this.giftProducts}}
+                                <div class="mobile-product-row gift-product">
+                                    <span>{{this.name}} (Tặng)</span>
+                                    <span>{{this.quantity}} hộp</span>
+                                </div>
+                            {{/each}}
+
+                        </div>
+
+                        <div class="mobile-total">
+                            <span>Tổng tiền</span>
+
+                            <strong class="text-danger format-money"
+                                    data-money="{{this.totalAmount}}">
+                                {{this.totalAmount}} đ
+                            </strong>
+                        </div>
+
+                    </div>
+
+                {{else}}
+
+                    <div class="text-center text-muted py-5">
+                        Chưa có hóa đơn phù hợp.
+                    </div>
+
+                {{/each}}
+
+            </div>
+
+
+            <!-- TỔNG TIỀN TRÊN ĐIỆN THOẠI -->
+            {{#if bills.length}}
+                <div class="mobile-grand-total">
+                    <span>TỔNG CỘNG</span>
+
+                    <strong class="text-danger format-money"
+                            data-money="{{totalAmount}}">
+                        {{totalAmount}} đ
+                    </strong>
+                </div>
+            {{/if}}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* TỔNG THỂ */
+    .statistics-page {
+        padding-bottom: 100px !important;
+    }
+
+    .statistics-page .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .statistics-page .form-label {
+        color: #344767;
+    }
+
+    .statistics-page .form-control,
+    .statistics-page .form-select {
+        border-radius: 8px;
+    }
+
+    .filter-card {
+        background: #f8faff;
+    }
+
+
+    /* CARD THỐNG KÊ */
+    .summary-card {
+        transition: transform 0.2s ease;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .summary-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+    .revenue-icon {
+        background: #fff0f0;
+        color: #dc3545;
+    }
+
+    .bill-icon {
+        background: #eaf2ff;
+        color: #0d6efd;
+    }
+
+
+    /* BẢNG MÁY TÍNH */
+    .desktop-table {
+        display: block;
+    }
+
+    .desktop-table th {
+        white-space: nowrap;
+    }
+
+    .desktop-table td {
+        vertical-align: middle;
+    }
+
+    .desktop-table table {
+        min-width: 850px;
+    }
+
+
+    /* CARD ĐIỆN THOẠI */
+    .mobile-bill-list {
+        display: none;
+    }
+
+    .mobile-bill-item {
+        padding: 18px 16px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .mobile-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .mobile-info-row > span {
+        color: #6c757d;
+        flex-shrink: 0;
+    }
+
+    .mobile-info-row strong {
+        max-width: 65%;
+        overflow-wrap: anywhere;
+    }
+
+    .mobile-product-section {
+        background: #f8f9fa;
+        border-radius: 9px;
+        padding: 12px;
+        margin-top: 14px;
+    }
+
+    .mobile-product-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 7px 0;
+        font-size: 13px;
+        border-bottom: 1px dashed #dee2e6;
+    }
+
+    .mobile-product-row:last-child {
+        border-bottom: none;
+    }
+
+    .mobile-product-row span:first-child {
+        overflow-wrap: anywhere;
+    }
+
+    .mobile-product-row span:last-child {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .gift-product {
+        color: #198754;
+    }
+
+    .mobile-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        padding-top: 12px;
+        border-top: 1px solid #dee2e6;
+        font-size: 15px;
+    }
+
+    .mobile-total strong {
+        font-size: 17px;
+    }
+
+    .mobile-grand-total {
+        display: none;
+    }
+
+
+    /* RESPONSIVE ĐIỆN THOẠI */
+    @media (max-width: 767.98px) {
+
+        .statistics-page {
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: 120px !important;
+            margin-top: 20px !important;
+        }
+
+        .statistics-page h3 {
+            font-size: 19px;
+            line-height: 1.5;
+        }
+
+        .statistics-page .card-body {
+            padding: 16px !important;
+        }
+
+        .summary-card .card-body {
+            padding: 20px !important;
+        }
+
+        .summary-card h3 {
+            font-size: 21px;
+            overflow-wrap: anywhere;
+        }
+
+        .summary-icon {
+            width: 46px;
+            height: 46px;
+            font-size: 21px;
+            flex-shrink: 0;
+        }
+
+        .statistics-page .alert {
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        /* Ẩn bảng lớn */
+        .desktop-table {
+            display: none;
+        }
+
+        /* Hiện card hóa đơn */
+        .mobile-bill-list {
+            display: block;
+        }
+
+        .mobile-grand-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 16px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            font-weight: bold;
+        }
+
+        .mobile-grand-total strong {
+            font-size: 18px;
+            text-align: right;
+        }
+
+        .bill-list-card {
+            margin-bottom: 35px !important;
+        }
+
+        .filter-card .btn {
+            min-height: 46px;
+        }
+
+    }
+
+</style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // FORMAT NGÀY
+    document.querySelectorAll('.format-date').forEach(cell => {
+
+        const rawDate = cell.getAttribute('data-date');
+
+        if (rawDate) {
+            const date = new Date(rawDate);
+
+            if (!isNaN(date.getTime())) {
+                cell.innerText = date.toLocaleDateString('vi-VN');
+            }
+        }
+
+    });
+
+
+    // FORMAT TIỀN
+    document.querySelectorAll('.format-money').forEach(cell => {
+
+        const amount =
+            Number(cell.getAttribute('data-money')) || 0;
+
+        cell.innerText =
+            new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+
+    });
+
+
+    // KIỂM TRA KHOẢNG NGÀY
+    const fromDate = document.getElementById('fromDate');
+    const toDate = document.getElementById('toDate');
+
+    fromDate.addEventListener('change', function () {
+
+        toDate.min = this.value;
+
+        if (toDate.value && toDate.value < this.value) {
+            toDate.value = '';
+        }
+
+    });
+
+    toDate.addEventListener('change', function () {
+
+        fromDate.max = this.value;
+
+        if (fromDate.value && fromDate.value > this.value) {
+            fromDate.value = '';
+        }
+
+    });
+
+});
+</script>
